@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Level Test — A1 to C1</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:#f4f0e8;color:#1a1a1a;min-height:100vh;padding:2rem 1rem}
+  .app{max-width:700px;margin:0 auto}
+  .site-header{text-align:center;margin-bottom:2.5rem}
+  .site-header h1{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:600;letter-spacing:-.02em;line-height:1.2}
+  .site-header p{color:#666;margin-top:.4rem;font-size:.95rem;font-weight:300}
+  .progress-wrap{margin-bottom:1.75rem}
+  .progress-track{background:#ddd8ce;border-radius:999px;height:5px}
+  .progress-fill{height:5px;border-radius:999px;background:#2c5f2e;transition:width .4s ease}
+  .progress-label{font-size:.78rem;color:#999;text-align:right;margin-top:.35rem}
+  .card{background:#fff;border-radius:18px;padding:2.2rem;box-shadow:0 1px 18px rgba(0,0,0,.07);margin-bottom:1.5rem}
+  .q-meta{display:flex;align-items:center;gap:.5rem;margin-bottom:.8rem}
+  .q-num{font-size:.72rem;font-weight:500;color:#2c5f2e;letter-spacing:.1em;text-transform:uppercase}
+  .q-badge{background:#eef5ee;color:#2c5f2e;font-size:.68rem;font-weight:500;padding:3px 9px;border-radius:999px}
+  .q-text{font-size:1.05rem;line-height:1.65;color:#111;margin-bottom:1.4rem;white-space:pre-line}
+  .options{display:flex;flex-direction:column;gap:.6rem}
+  .opt{display:flex;align-items:center;gap:.75rem;padding:.82rem 1.1rem;border:1.5px solid #e5e0d5;border-radius:11px;cursor:pointer;transition:border-color .15s,background .15s;font-size:.93rem;color:#333;user-select:none}
+  .opt:hover:not(.locked){border-color:#2c5f2e;background:#f4fbf4}
+  .opt.chosen{border-color:#2c5f2e;background:#eef5ee}
+  .opt.correct{border-color:#2c5f2e;background:#e5f2e5}
+  .opt.wrong{border-color:#c0392b;background:#fdecea}
+  .opt.locked{cursor:default}
+  .opt-letter{width:26px;height:26px;border-radius:50%;background:#f0ede6;font-size:.73rem;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s,color .15s}
+  .opt.chosen .opt-letter,.opt.correct .opt-letter{background:#2c5f2e;color:#fff}
+  .opt.wrong .opt-letter{background:#c0392b;color:#fff}
+  .feedback{margin-top:1rem;padding:.7rem 1rem;background:#f0f7f0;border-left:3px solid #2c5f2e;border-radius:0 8px 8px 0;font-size:.88rem;color:#334;display:none}
+  .feedback.show{display:block}
+  .nav{display:flex;justify-content:flex-end;margin-top:1.2rem}
+  .btn{padding:.72rem 1.9rem;border-radius:9px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:500;transition:background .15s}
+  .btn-green{background:#2c5f2e;color:#fff}
+  .btn-green:hover{background:#245027}
+  .btn-green:disabled{background:#b0c9b0;cursor:not-allowed}
+  .btn-ghost{background:#f0ede6;color:#333;border:1.5px solid #ddd}
+  .btn-ghost:hover{background:#e8e4dc}
+  .intro{text-align:center}
+  .intro h2{font-family:'Playfair Display',serif;font-size:1.75rem;margin-bottom:.75rem}
+  .intro p{color:#555;line-height:1.75;margin-bottom:1.5rem;font-size:.95rem}
+  .intro-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.75rem}
+  .stat-box{background:#f4f0e8;border-radius:12px;padding:.85rem .5rem;text-align:center}
+  .stat-val{font-family:'Playfair Display',serif;font-size:1.4rem;color:#2c5f2e;font-weight:600}
+  .stat-key{font-size:.72rem;color:#999;margin-top:2px}
+  .results{text-align:center}
+  .score-circle{width:130px;height:130px;border-radius:50%;border:5px solid #2c5f2e;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1.25rem}
+  .score-big{font-family:'Playfair Display',serif;font-size:2.3rem;font-weight:600}
+  .score-of{font-size:.72rem;color:#999}
+  .result-level{font-family:'Playfair Display',serif;font-size:3rem;color:#2c5f2e;line-height:1}
+  .result-desc{color:#555;font-size:.93rem;line-height:1.7;max-width:450px;margin:.9rem auto 1.5rem}
+  .breakdown{display:grid;grid-template-columns:repeat(6,1fr);gap:.55rem;margin:1.5rem 0}
+  .bk{background:#f4f0e8;border-radius:11px;padding:.75rem .4rem;text-align:center}
+  .bk-lvl{font-weight:500;font-size:.82rem;color:#444}
+  .bk-score{font-family:'Playfair Display',serif;font-size:1.2rem;color:#2c5f2e;font-weight:600}
+  .bk-sub{font-size:.65rem;color:#aaa;margin-top:2px}
+  .actions{display:flex;gap:.75rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap}
+  @media(max-width:520px){.breakdown{grid-template-columns:repeat(3,1fr)}.site-header h1{font-size:1.9rem}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="site-header">
+    <h1>English Level Test</h1>
+    <p>Grammar &amp; Vocabulary · A1 to C1 · CEFR aligned</p>
+  </div>
+  <div id="root"></div>
+</div>
+<script>
+var Q = [
+  // A1 (1-10)
+  {l:"A1",q:"I ___ a student.",o:["am","is","are","be"],a:0,fb:"With 'I', we always use 'am'. 'Is' is for he/she/it, and 'are' is for you/we/they."},
+  {l:"A1",q:"She ___ from Jordan.",o:["am","is","are","be"],a:1,fb:"With 'she', we use 'is'. Remember: I = am, he/she/it = is, you/we/they = are."},
+  {l:"A1",q:"They ___ soccer every Friday.",o:["play","plays","playing","played"],a:0,fb:"'They' takes the base form 'play' in the present simple. Only he/she/it adds -s (plays)."},
+  {l:"A1",q:"Choose the correct sentence:",o:["He have a car.","He has a car.","He having a car.","He haves a car."],a:1,fb:"With 'he/she/it', we use 'has', not 'have'. 'Having' and 'haves' are never correct here."},
+  {l:"A1",q:"I have ___ brother.",o:["a","an","the","some"],a:0,fb:"We use 'a' before words starting with a consonant sound. 'Brother' starts with a consonant, so 'a brother' is correct."},
+  {l:"A1",q:"___ you like coffee?",o:["Is","Do","Are","Does"],a:1,fb:"'Do' is used to form questions with I/you/we/they. 'Does' is for he/she/it."},
+  {l:"A1",q:"My book is ___ the table.",o:["in","on","at","under"],a:1,fb:"'On' is used for surfaces. The book is resting on top of the table. 'In' is for inside something enclosed."},
+  {l:"A1",q:"Yesterday, I ___ at home.",o:["am","was","were","be"],a:1,fb:"'Was' is the past simple of 'am/is' used with I/he/she/it. 'Were' is used with you/we/they."},
+  {l:"A1",q:"What time ___ you get up?",o:["do","does","are","is"],a:0,fb:"'Do' forms questions with 'you'. 'Does' is used with he/she/it."},
+  {l:"A1",q:"The opposite of 'big' is:",o:["tall","small","long","short"],a:1,fb:"'Small' is the direct opposite of 'big'. 'Short' is the opposite of 'tall', and 'long' relates to length."},
+  // A2 (11-20)
+  {l:"A2",q:"We ___ dinner when the phone rang.",o:["have","had","were having","having"],a:2,fb:"Past continuous ('were having') describes an action in progress when another event interrupted it."},
+  {l:"A2",q:"I have lived here ___ 2020.",o:["for","since","from","by"],a:1,fb:"'Since' refers to a specific point in time (2020). 'For' is used with a period of time (e.g. for five years)."},
+  {l:"A2",q:"There aren't ___ apples left.",o:["some","much","any","a"],a:2,fb:"In negative sentences, we use 'any' with countable and uncountable nouns. 'Some' is for positive sentences."},
+  {l:"A2",q:"She is ___ than her sister.",o:["tall","taller","tallest","more tall"],a:1,fb:"Comparative adjectives of one syllable add -er: 'taller'. 'More tall' is incorrect — we don't use 'more' with short adjectives."},
+  {l:"A2",q:"I ___ visit my grandmother tomorrow.",o:["will","did","have","was"],a:0,fb:"'Will' expresses a future intention or plan. 'Did' is past, 'have' is for present perfect, and 'was' is past be."},
+  {l:"A2",q:"Choose the correct sentence:",o:["I didn't went.","I didn't go.","I not go.","I wasn't go."],a:1,fb:"Past simple negative: 'didn't' + base verb. 'Went' is already past, so 'didn't went' is wrong."},
+  {l:"A2",q:"If it rains, we ___ stay home.",o:["stayed","staying","will","would"],a:2,fb:"First conditional (real possibility): If + present simple, will + base verb. 'Would' belongs in the second conditional."},
+  {l:"A2",q:"The movie was very ___.",o:["interest","interested","interesting","interests"],a:2,fb:"'Interesting' describes a thing or situation. 'Interested' describes how a person feels. The movie is 'interesting'."},
+  {l:"A2",q:"How ___ money do you need?",o:["many","much","any","some"],a:1,fb:"'Much' is used with uncountable nouns like 'money'. 'Many' is for countable nouns (e.g. how many coins)."},
+  {l:"A2",q:"He can speak English ___.",o:["good","best","well","better"],a:2,fb:"'Well' is the adverb form used to describe how an action is done. 'Good' is an adjective and cannot modify a verb."},
+  // B1 (21-35)
+  {l:"B1",q:"I ___ this book twice.",o:["read","have read","am reading","reads"],a:1,fb:"Present perfect ('have read') is used for experiences up to now. Past simple 'read' would need a finished time reference."},
+  {l:"B1",q:"She ___ to London last year.",o:["has gone","went","goes","going"],a:1,fb:"'Last year' is a finished time reference, so we use past simple ('went'). 'Has gone' is present perfect and doesn't work with 'last year'."},
+  {l:"B1",q:"If I had more time, I ___ learn Spanish.",o:["will","would","can","am"],a:1,fb:"Second conditional: If + past simple, would + base verb. This expresses a hypothetical situation."},
+  {l:"B1",q:"The project ___ by our team last week.",o:["completed","was completed","is completed","completing"],a:1,fb:"Passive voice in past simple: was/were + past participle. 'Last week' confirms we need the past tense."},
+  {l:"B1",q:"I enjoy ___ books.",o:["read","reading","to readed","reads"],a:1,fb:"'Enjoy' is always followed by a gerund (-ing form). It never takes an infinitive."},
+  {l:"B1",q:"He apologized ___ being late.",o:["of","at","for","in"],a:2,fb:"'Apologize for' is the fixed preposition collocation. We apologize for something, not of or at something."},
+  {l:"B1",q:"By the time we arrived, they ___.",o:["leave","left","had left","leaving"],a:2,fb:"Past perfect ('had left') shows an action completed before another past event. They left first, then we arrived."},
+  {l:"B1",q:"The instructions were very ___.",o:["clear","clearly","clearing","cleared"],a:0,fb:"'Clear' is an adjective used after 'be'. 'Clearly' is an adverb and would need to modify a verb."},
+  {l:"B1",q:"I don't know ___ he will come.",o:["what","whether","whose","whom"],a:1,fb:"'Whether' introduces an indirect yes/no question (will he come or not). 'What' introduces questions about a thing."},
+  {l:"B1",q:"This is the restaurant ___ we met.",o:["who","where","which","whose"],a:1,fb:"'Where' is used for relative clauses referring to places. 'Which' would need a preposition: 'the restaurant in which we met'."},
+  {l:"B1",q:"The opposite of 'generous' is:",o:["friendly","selfish","polite","honest"],a:1,fb:"'Selfish' means only caring about yourself — the opposite of being generous. The other options are unrelated."},
+  {l:"B1",q:"She has a good ___ for languages.",o:["skill","chance","luck","opinion"],a:0,fb:"'A skill for something' means a natural ability. 'Chance' and 'luck' are about fortune, not ability."},
+  {l:"B1",q:"The meeting was ___ because the manager was absent.",o:["delayed","expanded","reduced","solved"],a:0,fb:"'Delayed' means postponed or pushed back in time. The others don't fit the context of a meeting being affected."},
+  {l:"B1",q:"Choose the closest meaning to 'improve':",o:["worsen","develop","remove","replace"],a:1,fb:"'Develop' and 'improve' both suggest positive progress. 'Worsen' is the opposite."},
+  {l:"B1",q:"He is responsible ___ customer support.",o:["for","of","with","at"],a:0,fb:"'Responsible for' is the fixed collocation. We say 'in charge of' or 'responsible for' — never 'responsible of/with/at'."},
+  // B2 (36-45)
+  {l:"B2",q:"If she ___ harder, she would have passed.",o:["studied","had studied","studies","study"],a:1,fb:"Third conditional: If + past perfect, would have + past participle. This expresses a hypothetical past with an imagined different outcome."},
+  {l:"B2",q:"I wish I ___ more free time.",o:["have","had","will have","having"],a:1,fb:"'I wish + past simple' expresses a desire about the present that isn't true. 'I wish I had' = I don't have free time now."},
+  {l:"B2",q:"The report needs ___ before publication.",o:["revise","revising","revised","revises"],a:1,fb:"'Need + gerund (-ing)' has a passive meaning: the report needs to be revised."},
+  {l:"B2",q:"Hardly had I arrived ___ it started raining.",o:["when","than","then","while"],a:0,fb:"'Hardly...when' is the fixed structure. 'No sooner...than' is the similar alternative — but 'than' pairs with 'no sooner', not 'hardly'."},
+  {l:"B2",q:"The company is looking for highly ___ employees.",o:["motivate","motivated","motivating","motivation"],a:1,fb:"'Motivated' (past participle as adjective) describes the employees' state. 'Motivating' would describe something that motivates others."},
+  {l:"B2",q:"The results were completely ___.",o:["expected","predictable","unexpected","ordinary"],a:2,fb:"'Completely unexpected' is the natural collocation for emphasising surprise. 'Predictable' and 'expected' mean the opposite."},
+  {l:"B2",q:"The government plans to ___ new regulations.",o:["introduce","invent","discover","reveal"],a:0,fb:"'Introduce regulations' is the standard collocation. 'Invent' and 'discover' relate to ideas or facts. 'Reveal' means to uncover something hidden."},
+  {l:"B2",q:"Despite ___ tired, she continued working.",o:["be","being","been","is"],a:1,fb:"'Despite' is a preposition and must be followed by a noun or gerund (-ing). 'Despite being tired' = although she was tired."},
+  {l:"B2",q:"His explanation was so confusing that it raised more ___.",o:["answers","questions","solutions","facts"],a:1,fb:"'Raise questions' is the natural collocation — meaning to create doubt or uncertainty."},
+  {l:"B2",q:"The issue should be addressed ___.",o:["immediate","immediately","immediacy","more immediate"],a:1,fb:"An adverb ('immediately') is needed to modify the verb 'addressed'. 'Immediate' is an adjective. 'Immediacy' is a noun."},
+  // C1 (46-50)
+  {l:"C1",q:"Not only ___ the proposal, but she also improved it.",o:["did she accept","she accepted","accepted she","she did accept"],a:0,fb:"'Not only' at the start of a clause triggers subject-auxiliary inversion: 'Not only did she accept'. This is a formal emphatic structure."},
+  {l:"C1",q:"Had I known about the problem, I ___ action sooner.",o:["take","took","would have taken","would take"],a:2,fb:"Third conditional with inversion: 'Had I known' = 'If I had known'. The result clause needs 'would have + past participle'."},
+  {l:"C1",q:"The CEO's remarks were open to ___.",o:["interpretation","interpret","interpreted","interpreting"],a:0,fb:"'Open to interpretation' is a fixed phrase. A noun is required after the preposition 'to' in this structure."},
+  {l:"C1",q:"The new policy aims to ___ efficiency across departments.",o:["enhance","reduce","decline","limit"],a:0,fb:"'Enhance' means to improve quality or value. It collocates naturally with 'efficiency'. The others suggest reducing it."},
+  {l:"C1",q:"Choose the closest meaning to 'substantial':",o:["minor","significant","ordinary","temporary"],a:1,fb:"'Substantial' means large in size, value, or importance — closest to 'significant'. 'Minor' is the opposite."},
+  // Translation (51-55)
+  {l:"TR",q:"Translate into English:\nأنا أتعلم اللغة الإنجليزية منذ سنتين.",o:["I learned English for two years.","I have been learning English for two years.","I am learning English two years ago.","I learn English since two years."],a:1,fb:"This expresses an action that started in the past and continues now — requiring present perfect continuous: 'have been learning'. 'Since' needs a specific point in time; 'for' needs a duration."},
+  {l:"TR",q:"Translate into English:\nلو كان لدي وقت أكثر، لسافرت إلى بريطانيا.",o:["If I have more time, I travel to Britain.","If I had more time, I would travel to Britain.","If I had more time, I will travel to Britain.","If I have had more time, I would travel."],a:1,fb:"Second conditional: If + past simple, would + base verb. It expresses a hypothetical present/future situation."},
+  {l:"TR",q:"Translate into English:\nيجب على الطلاب إنهاء الاختبار قبل التسجيل.",o:["Students must finish the test before registering.","Students should finished the test before register.","Students must to finish the test before registration.","Students finish the test before they registering."],a:0,fb:"'Must' is followed by a base verb (no 'to'). 'Before registering' uses a gerund correctly. Option C wrongly adds 'to' after 'must'."},
+  {l:"TR",q:"Translate into English:\nعلى الرغم من الطقس السيئ، ذهبنا إلى العمل.",o:["Because of the bad weather, we stayed home.","Although the weather was bad, we went to work.","The weather was bad because we went to work.","Despite we went to work, the weather was bad."],a:1,fb:"'Although' introduces a concessive clause (subject + verb). 'Despite' needs a noun/gerund. Option D incorrectly uses 'despite' with a full clause."},
+  {l:"TR",q:"Translate into English:\nتم إرسال البريد الإلكتروني إلى جميع المتقدمين.",o:["The email sent all applicants.","All applicants sent the email.","The email was sent to all applicants.","The email has send to all applicants."],a:2,fb:"Passive voice in past simple: 'was sent'. Option A has no auxiliary. Option D incorrectly uses 'has send' instead of 'has been sent'."}
+];
+
+var TOTAL_Q = 55;
+
+var LEVEL_DESCS = {
+  A1:"You are at the Beginner level (A1). You can understand and use familiar everyday expressions and introduce yourself. This is the right starting point — we will build your foundation together.",
+  A2:"You are at the Elementary level (A2). You can communicate in simple, routine tasks and discuss familiar topics. You are ready to develop your grammar and expand your vocabulary.",
+  B1:"You are at the Intermediate level (B1). You can handle most everyday situations and describe experiences and events. You can express opinions with some confidence.",
+  B2:"You are at the Upper-Intermediate level (B2). You can interact fluently with native speakers and produce clear, detailed text on a wide range of subjects.",
+  C1:"You are at the Advanced level (C1). You can express ideas fluently and spontaneously, using language flexibly for social, academic, and professional purposes."
+};
+
+var s = {screen:"intro", i:0, sel:null, done:false, answers:[]};
+
+function getResult(){
+  var sc={A1:0,A2:0,B1:0,B2:0,C1:0,TR:0};
+  s.answers.forEach(function(a,i){ if(a===Q[i].a) sc[Q[i].l]++; });
+  
+  
+  
+    var tot=0; s.answers.forEach(function(a,i){if(a===Q[i].a)tot++;}); var level="A1"; if(tot>=53)level="C1"; else if(tot>=40)level="B2"; else if(tot>=29)level="B1"; else if(tot>=18)level="A2"; return {level:level, sc:sc};
+}
+
+function render(){
+  var root=document.getElementById("root");
+  if(s.screen==="intro"){
+    root.innerHTML='<div class="card intro"><h2>Find your English level</h2><p>Answer 55 questions covering grammar, vocabulary, and translation.<br>Pick the best answer for each question.</p><div class="intro-stats"><div class="stat-box"><div class="stat-val">55</div><div class="stat-key">Questions</div></div><div class="stat-box"><div class="stat-val">~20 min</div><div class="stat-key">Duration</div></div><div class="stat-box"><div class="stat-val">A1-C1</div><div class="stat-key">CEFR Range</div></div></div><button class="btn btn-green" onclick="startTest()">Start test &rarr;</button></div>';
+    return;
+  }
+  if(s.screen==="quiz"){
+    var q=Q[s.i];
+    var pct=(s.i/TOTAL_Q)*100;
+    var letters=["A","B","C","D"];
+    var opts=q.o.map(function(o,idx){
+      var cls="opt";
+      if(s.done){ cls+=" locked"; if(idx===q.a) cls+=" correct"; else if(idx===s.sel&&s.sel!==q.a) cls+=" wrong"; }
+      else if(idx===s.sel) cls+=" chosen";
+      return '<div class="'+cls+'" onclick="pick('+idx+')"><div class="opt-letter">'+letters[idx]+'</div>'+o+'</div>';
+    }).join("");
+    var badge=q.l==="TR"?"Translation":q.l;
+    var fbcls="feedback"+(s.done?" show":"");
+    root.innerHTML='<div class="progress-wrap"><div class="progress-track"><div class="progress-fill" style="width:'+pct+'%"></div></div><div class="progress-label">Question '+(s.i+1)+' of '+TOTAL_Q+'</div></div><div class="card"><div class="q-meta"><span class="q-num">Q'+(s.i+1)+'</span><span class="q-badge">'+badge+'</span></div><div class="q-text">'+q.q+'</div><div class="options">'+opts+'</div><div class="'+fbcls+'">'+q.fb+'</div></div><div class="nav"><button class="btn btn-green" onclick="nextQ()" '+(s.done?'':'disabled')+'>'+(s.i<TOTAL_Q-1?'Next question &rarr;':'See my result &rarr;')+'</button></div>';
+  }
+  if(s.screen==="results"){
+    var r=getResult();
+    var total=s.answers.filter(function(a,i){return a===Q[i].a;}).length;
+    var bkData=[{l:"A1",t:10},{l:"A2",t:10},{l:"B1",t:15},{l:"B2",t:10},{l:"C1",t:5},{l:"TR",t:5}];
+    var bk=bkData.map(function(x){ return '<div class="bk"><div class="bk-lvl">'+(x.l==="TR"?"Trans":x.l)+'</div><div class="bk-score">'+r.sc[x.l]+'/'+x.t+'</div><div class="bk-sub">correct</div></div>'; }).join("");
+    var scoreRanges='<div style="font-size:.78rem;color:#999;margin-top:.5rem">Score ranges: A1: 0–17 &nbsp;|&nbsp; A2: 18–28 &nbsp;|&nbsp; B1: 29–39 &nbsp;|&nbsp; B2: 40–52 &nbsp;|&nbsp; C1: 53–55</div>';
+    root.innerHTML='<div class="card results"><div class="score-circle"><div class="score-big">'+total+'</div><div class="score-of">out of '+TOTAL_Q+'</div></div><div class="result-level">'+r.level+'</div><p class="result-desc">'+LEVEL_DESCS[r.level]+'</p>'+scoreRanges+'<div class="breakdown" style="margin-top:1.2rem">'+bk+'</div><div class="actions"><button class="btn btn-ghost" onclick="restartTest()">&larr; Try again</button><button class="btn btn-green" onclick="shareResult()">Share result</button></div></div>';
+  }
+}
+
+function startTest(){ s={screen:"quiz",i:0,sel:null,done:false,answers:[]}; render(); }
+function pick(idx){ if(s.done) return; s.sel=idx; s.done=true; s.answers.push(idx); render(); }
+function nextQ(){ if(s.i<TOTAL_Q-1){ s.i++; s.sel=null; s.done=false; render(); } else { s.screen="results"; render(); } }
+function restartTest(){ s={screen:"intro",i:0,sel:null,done:false,answers:[]}; render(); }
+function shareResult(){
+  var r=getResult();
+  var total=s.answers.filter(function(a,i){return a===Q[i].a;}).length;
+  var txt="I scored "+total+"/"+TOTAL_Q+" on the English Level Test — my level is "+r.level+"!";
+  if(navigator.share){ navigator.share({title:"My English Level",text:txt}); }
+  else{ prompt("Copy this to share your result:",txt); }
+}
+
+render();
+</script>
+</body>
+</html>
